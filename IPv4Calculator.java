@@ -2,14 +2,11 @@
  * IPv4 Subnetting Calculator
  * Autor: Gisela Wolf
  * Datum: 31.12.2022
- * CW: weird and denglish variable names. Read at your own risk
  *
  * Issues still to fix:
  * - Userproofing inputs
- * - Same size nets in different size network option double up
- * - cleanup and consolidate loops
- * - add option for entering slash notation
- * - translate all into english
+ * - problem: Same size nets in different size network option double up
+ * Next up: IPv6
  */
 
 import java.util.Arrays;
@@ -33,7 +30,7 @@ class IPv4 {
 
     static int subnetSlash = 0;
     static double newSubnetSlash = 0;
-    static int numberOfNetworks;
+    static int numberOfNetworksDesired;
     static boolean isSameSize = true;
 
     //Constructor
@@ -44,6 +41,7 @@ class IPv4 {
     public static void encoding() {
         Scanner in = new Scanner(System.in);
 //input IP
+        System.out.println("Welcome to this IPv4 Calculator");
         System.out.println("First the IP-Adress:");
         System.out.println("Please enter the first octet:");
         IPv4Dec[0] = in.nextInt();
@@ -97,14 +95,13 @@ class IPv4 {
         String eingabe;
 
         Scanner in3 = new Scanner(System.in);
-        System.out.println("Willkommen in Tikas IP Rechner");
-        System.out.println("Wie viele Netze willst du bilden?");
-        numberOfNetworks = in3.nextInt();
-        System.out.println("Sollen die Netze gleich groß sein? Y/N");
+        System.out.println("How many networks do you want to make?");
+        numberOfNetworksDesired = in3.nextInt();
+        System.out.println("Should the networks be of the same size? Y/N");
         Scanner in2 = new Scanner(System.in);
         eingabe = in2.nextLine();
 
-//sind die Netze gleich groß oder nicht?
+//are the networks of the same size?
         if (eingabe.equals("N")) {
             isSameSize = false;
         } else if (eingabe.equals("Y")) {
@@ -130,45 +127,46 @@ class IPv4 {
             IPv4BinBitwise[i] = Character.getNumericValue(IPv4BinStringAllArray[i]);
         }
 
-        //determine number of bits to flip. Beware the floating point nonsense!
-        double numberOfBitsToFlip = log(numberOfNetworks) / log(2);
-        int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make no we don't just make one more... we go to the next increment
+        //determine number of bits to flip. Beware the floating point!
+        // numberOfNetworksDesired vs numberOfNetworks made
+
+        double numberOfBitsToFlip = log(numberOfNetworksDesired) / log(2);
+        int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
 
-        int[] counterDez = new int[numberOfNetworks];
-        String[] counterBinString = new String[numberOfNetworks];
-        int[] counterBinInt = new int[numberOfNetworks];
-        int[][] alternatesArray = new int[numberOfNetworks][numberOfBitsToFlipRoundedDown];
-        int[][] alternatesArray2 = new int[numberOfNetworks][numberOfBitsToFlipRoundedUp];
-
-        //This is the good one. Number of bits is even and we proceed to make all the subnets we output
         //this is where the magic of subnetting happens
+        //This is the good one. Number of bits is even and we proceed to make all the subnets we output
         int[][] iPv4BinOctetwise = new int[0][];
     if (numberOfBitsToFlip == numberOfBitsToFlipRoundedDown) {
+        int numberOfNetworksMade = numberOfNetworksDesired;
+        int[] counterDec = new int[numberOfNetworksMade];
+        String[] counterBinString = new String[numberOfNetworksMade];
+        int[] counterBinInt = new int[numberOfNetworksMade * numberOfBitsToFlipRoundedDown];
+        int[][] alternatesArray = new int[numberOfNetworksMade][numberOfBitsToFlipRoundedDown];             //bits to flip even
+
             //make array out of the bits we need to increment
             int[] flippingBitsArray = new int[numberOfBitsToFlipRoundedDown];
             for (int i = 1; i < numberOfBitsToFlip; i++) {
                 flippingBitsArray[i] = IPv4BinBitwise[subnetSlash + i];
             }
             //counter of increments +1 in Decimal
-            for (int i = 0; i < numberOfNetworks; i++) {
-                counterDez[i] = i;
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterDec[i] = i;
             }
             //counter of increments in binary (+padding)
-            for (int i = 0; i < numberOfNetworks; i++) {
-                counterBinString[i] = Integer.toBinaryString(counterDez[i]);
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterBinString[i] = Integer.toBinaryString(counterDec[i]);
                 counterBinInt[i] = Integer.parseInt(counterBinString[i]);
                 counterBinString[i] = String.format("%0" + numberOfBitsToFlipRoundedDown + "d", counterBinInt[i]);
             }
             //alternatesArray[i][j]  i counts down, j counts across
-            for (int i = 0; i < numberOfNetworks; i++) {
+            for (int i = 0; i < numberOfNetworksMade; i++) {
                 for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {
-                    alternatesArray[i][j] = counterBinString[i].charAt(j) - 48;          //wtf!? but it works
+                    alternatesArray[i][j] = Character.getNumericValue(counterBinString[i].charAt(j));
                 }
             }
-
             //feed those one by one back into the IP address to receive the variants (before ID and BA calc)
-            for (int i = 0; i < numberOfNetworks; i++) {                      //for every network
+            for (int i = 0; i < numberOfNetworksDesired; i++) {                      //for every network
                 int iPv4DezOctet0 = 0;
                 int iPv4DezOctet1 = 0;
                 int iPv4DezOctet2 = 0;
@@ -177,7 +175,7 @@ class IPv4 {
                 int iPv4DezOctet1BA = 0;
                 int iPv4DezOctet2BA = 0;
                 int iPv4DezOctet3BA = 0;
-                for (int j = 0; j < numberOfBitsToFlip; j++) {               //for every Bit
+                for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {               //for every Bit
                     IPv4BinBitwise[subnetSlash + j] = alternatesArray[i][j];
 
                 //ID
@@ -228,29 +226,31 @@ class IPv4 {
 
             }
         }
-//else nonsense goes here. We make more nets than we output! So round up and round down
+        //else goes here. We make more nets than we output! So round up and round down
        else {
-            int[] flippingBitsArray = new int[numberOfBitsToFlipRoundedDown + 1];
-            for (int i = 1; i < numberOfBitsToFlip; i++) {
-                flippingBitsArray[i] = IPv4BinBitwise[subnetSlash + i];
+        int numberOfNetworksMade = (int)Math.pow(2,numberOfBitsToFlipRoundedUp);
+        int[] counterDec = new int[numberOfNetworksMade];
+        String[] counterBinString = new String[numberOfNetworksMade];
+        int[] counterBinInt = new int[numberOfNetworksMade * numberOfBitsToFlipRoundedUp];
+        int[][] alternatesArray2 = new int[numberOfNetworksMade][numberOfBitsToFlipRoundedUp];              //bits to flip rounded up
+
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterDec[i] = i;
             }
-            for (int i = 0; i < numberOfNetworks; i++) {
-                counterDez[i] = i;
-            }
-            for (int i = 0; i < numberOfNetworks; i++) {
-                counterBinString[i] = Integer.toBinaryString(counterDez[i]);
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterBinString[i] = Integer.toBinaryString(counterDec[i]);
                 counterBinInt[i] = Integer.parseInt(counterBinString[i]);
                 counterBinString[i] = String.format("%0" + numberOfBitsToFlipRoundedUp +"d", counterBinInt[i]);
             }
-            for (int i = 0; i < numberOfNetworks; i++) {
-                for (int j = 0; j < numberOfBitsToFlipRoundedDown + 1; j++) {
-                    alternatesArray2[i][j] = counterBinString[i].charAt(j) -48;          //wtf!? but it works
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {
+                    alternatesArray2[i][j] = Character.getNumericValue(counterBinString[i].charAt(j));
                 }
             }
 
-            for (int i = 0; i < numberOfNetworks; i++) {                                     //for every network
-                for (int j = 0; j < numberOfBitsToFlipRoundedDown + 1; j++) {               //for every Bit
-                    IPv4BinBitwise[subnetSlash - 1 + j] = alternatesArray2[i][j];
+            for (int i = 0; i < numberOfNetworksDesired; i++) {                                 //for every network
+                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {               //for every Bit
+                    IPv4BinBitwise[subnetSlash + j] = alternatesArray2[i][j];
                 }
 
                 //ID
@@ -276,7 +276,6 @@ class IPv4 {
                 int iPv4DezOctet2 = Integer.parseInt(iPv4BinStringOctet2, 2);
                 int iPv4DezOctet3 = Integer.parseInt(iPv4BinStringOctet3, 2);
 
-
                 //BA
                 //All host bits to one
                 int[]IPv4BinBitwiseBA = IPv4BinBitwise;
@@ -299,20 +298,26 @@ class IPv4 {
                 int iPv4DezOctet2BA = Integer.parseInt(iPv4BinStringOctet2BA, 2);
                 int iPv4DezOctet3BA = Integer.parseInt(iPv4BinStringOctet3BA, 2);
 
-                System.out.println("**===================**"
-                        + "\r\n" +"ID: " + iPv4DezOctet0 +"." +iPv4DezOctet1 +"." +iPv4DezOctet2 +"." +iPv4DezOctet3
-                        + "\r\n" +"BA: " + iPv4DezOctet0BA +"." +iPv4DezOctet1BA +"." +iPv4DezOctet2BA +"." +iPv4DezOctet3BA
-                        + "\r\n" +"**===================**");
+                int counter = 0;
+                counter ++;
 
+                if (counter < numberOfNetworksDesired) {
+                    System.out.println("**===================**"
+                            + "\r\n" + "ID: " + iPv4DezOctet0 + "." + iPv4DezOctet1 + "." + iPv4DezOctet2 + "." + iPv4DezOctet3
+                            + "\r\n" + "BA: " + iPv4DezOctet0BA + "." + iPv4DezOctet1BA + "." + iPv4DezOctet2BA + "." + iPv4DezOctet3BA
+                            + "\r\n" + "**===================**");
+                }
             }
+
+
             }
         }
 
     //Networks of different sizes
     public static void unterschiedlichGrosseNetze() {
         Scanner in = new Scanner(System.in);
-        Integer[] anzahlHosts = new Integer[numberOfNetworks];
-        int[] nearestPowerOfTwo = new int[numberOfNetworks];
+        Integer[] anzahlHosts = new Integer[numberOfNetworksDesired];
+        int[] nearestPowerOfTwo = new int[numberOfNetworksDesired];
         int anzahlHostsGesamt = 0;
         int anzahlHostsGesamtMoeglich = 0;
         String IPv4BinStringAll = "";
@@ -320,7 +325,7 @@ class IPv4 {
         int[] IPv4BinBitwiseBA = new int[32];
 
         //get the number of hosts and turn into anzahlHosts[]
-        for (int i = 0; i < numberOfNetworks; i++) {
+        for (int i = 0; i < numberOfNetworksDesired; i++) {
             System.out.println("Gib die Anzahl der Hosts für Netz " + i + " ein:");
             anzahlHosts[i] = in.nextInt() +2;       //+2 für ID und BA
             nearestPowerOfTwo[i] = (int)pow(2, ceil(log(anzahlHosts[i])/log(2)));
@@ -334,10 +339,9 @@ class IPv4 {
             for(int i = 0; i < anzahlHostsList.size(); i++){
                 anzahlHosts[i]  = anzahlHostsList.get(i);
             }
-            //Ich dreh am Rad...
 
-        //gesamtanzahl der eingegebenen Hosts, vergleich mit möglicher Hostanzahl
-        for (int i = 0; i < numberOfNetworks; i++){
+        //total of entered hosts, compare to number of possible hosts
+        for (int i = 0; i < numberOfNetworksDesired; i++){
             anzahlHostsGesamt = anzahlHostsGesamt + anzahlHosts[i];
         }
         anzahlHostsGesamtMoeglich = (int)Math.pow(2, 32-subnetSlash);
@@ -357,7 +361,7 @@ class IPv4 {
             }
 
             //here starts the big for loop, one for each new subnet
-            for (int i = 0; i < numberOfNetworks; i++) {
+            for (int i = 0; i < numberOfNetworksDesired; i++) {
                 //subnetzSlash      <-starting subnetmask
                 //Determine new subnetzmask
                 newSubnetSlash = subnetSlash + (log(anzahlHostsGesamtMoeglich/anzahlHosts[i])/log(2));
@@ -422,7 +426,7 @@ class IPv4 {
 
             //Fehler für zuviele Hosts
         }else{
-            System.out.println("Sorry aber so viele Hosts passen nicht in ein \\" +subnetSlash +" Netz.");
+            System.out.println("I'm sorry but that is too many hosts \\" +subnetSlash +" Netz.");
         }
 
     }
