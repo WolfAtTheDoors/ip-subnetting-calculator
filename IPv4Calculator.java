@@ -29,35 +29,6 @@ class IPv4 {
     static Integer[] numberOfHosts = new Integer[numberOfNetworksDesired];
     static boolean isSameSize = true;
 
-    /*
-    public static int[] getSubnetDec() {
-        return subnetDec;
-    }
-    public static void setSubnetDec(int[] subnetDec) {
-        if(true) {
-            IPv4.subnetDec = subnetDec;
-        }
-    }
-    public static int getSubnetSlash() {
-        return subnetSlash;
-    }
-    public static void setSubnetSlash(int subnetSlash) {
-        IPv4.subnetSlash = subnetSlash;
-    }
-    public static int getNumberOfNetworksDesired() {
-        return numberOfNetworksDesired;
-    }
-    public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
-        IPv4.numberOfNetworksDesired = numberOfNetworksDesired;
-    }
-    public Integer[] getNumberOfHosts() {
-        return numberOfHosts;
-    }
-    public void setNumberOfHosts(Integer[] numberOfHosts) {
-        this.numberOfHosts = numberOfHosts;
-    }
-*/
-
     //Constructor
     IPv4() {
     }
