@@ -2,6 +2,11 @@
  * IPv4 Subnetting Calculator
  * Autor: Gisela Wolf
  * Datum: 31.12.2022
+ * Issues still to fix:
+ * - Userproofing inputs
+ * - problem: Same size nets in different size network option
+ * IPv6
+ * - shortform input, padding rules
  */
 
 import java.util.Arrays;
@@ -11,6 +16,34 @@ import java.util.Scanner;
 import java.lang.Integer;
 import java.lang.String;
 import static java.lang.Math.*;
+
+class hex{
+    public static String hexToBin(String hex){
+        hex = hex.replaceAll("0", "0000");
+        hex = hex.replaceAll("1", "0001");
+        hex = hex.replaceAll("2", "0010");
+        hex = hex.replaceAll("3", "0011");
+        hex = hex.replaceAll("4", "0100");
+        hex = hex.replaceAll("5", "0101");
+        hex = hex.replaceAll("6", "0110");
+        hex = hex.replaceAll("7", "0111");
+        hex = hex.replaceAll("8", "1000");
+        hex = hex.replaceAll("9", "1001");
+        hex = hex.replaceAll("A", "1010");
+        hex = hex.replaceAll("B", "1011");
+        hex = hex.replaceAll("C", "1100");
+        hex = hex.replaceAll("D", "1101");
+        hex = hex.replaceAll("E", "1110");
+        hex = hex.replaceAll("F", "1111");
+        hex = hex.replaceAll("a", "1010");
+        hex = hex.replaceAll("b", "1011");
+        hex = hex.replaceAll("c", "1100");
+        hex = hex.replaceAll("d", "1101");
+        hex = hex.replaceAll("e", "1110");
+        hex = hex.replaceAll("f", "1111");
+        return hex;
+    }
+}
 
 class IPv4 {
     //IP Adress
@@ -23,11 +56,40 @@ class IPv4 {
     static int[] subnetBinInt = {0, 0, 0, 0};
     static String[] subnetBinString = {"0", "0", "0", "0"};
 
-    static int subnetSlash = 0;
+    private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
     static int numberOfNetworksDesired;
     static Integer[] numberOfHosts = new Integer[numberOfNetworksDesired];
     static boolean isSameSize = true;
+
+/*
+    public static int[] getSubnetDec() {
+        return subnetDec;
+    }
+    public static void setSubnetDec(int[] subnetDec) {
+        if(true) {
+            IPv4.subnetDec = subnetDec;
+        }
+    }
+    public static int getSubnetSlash() {
+        return subnetSlash;
+    }
+    public static void setSubnetSlash(int subnetSlash) {
+        IPv4.subnetSlash = subnetSlash;
+    }
+    public static int getNumberOfNetworksDesired() {
+        return numberOfNetworksDesired;
+    }
+    public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
+        IPv4.numberOfNetworksDesired = numberOfNetworksDesired;
+    }
+    public Integer[] getNumberOfHosts() {
+        return numberOfHosts;
+    }
+    public void setNumberOfHosts(Integer[] numberOfHosts) {
+        this.numberOfHosts = numberOfHosts;
+    }
+*/
 
     //Constructor
     IPv4() {
@@ -47,6 +109,7 @@ class IPv4 {
         IPv4Dec[2] = in.nextInt();
         System.out.println("Please enter the fourth octet:");
         IPv4Dec[3] = in.nextInt();
+
 //converts to binary
         for (int i = 0; i < IPv4Dec.length; i++) {
             IPv4BinInt[i] = Integer.parseInt(Integer.toBinaryString(IPv4Dec[i]));
@@ -424,10 +487,73 @@ class IPv4 {
     }
 }
 
+class IPv6 {
+    //IP Adress
+    static String[] IPv6Hex = {"abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd"};
+    static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
+    static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
+
+    //Subnetmask
+    static int subnetSlash = 0;
+    static double newSubnetSlash = 0;
+    static int numberOfNetworksDesired;
+
+    //Constructor
+    IPv6() {
+    }
+
+    public static void encoding() {
+        Scanner in = new Scanner(System.in);
+//input IP
+        System.out.println("Welcome to this IPv6 Calculator");
+        System.out.println("First the IP-Adress, in longform please:");
+        System.out.println("Please enter the first octet:");
+        IPv6Hex[0] = in.nextLine();
+        System.out.println("Please enter the second octet:");
+        IPv6Hex[1] = in.nextLine();
+        System.out.println("Please enter the third octet:");
+        IPv6Hex[2] = in.nextLine();
+        System.out.println("Please enter the fourth octet:");
+        IPv6Hex[3] = in.nextLine();
+        System.out.println("Please enter the fifth octet:");
+        IPv6Hex[4] = in.nextLine();
+        System.out.println("Please enter the sixth octet:");
+        IPv6Hex[5] = in.nextLine();
+        System.out.println("Please enter the seventh octet:");
+        IPv6Hex[6] = in.nextLine();
+        System.out.println("Please enter the eights octet:");
+        IPv6Hex[7] = in.nextLine();
+
+//converts to binary
+        for (int i = 0; i < 8; i++) {
+            IPv6BinString[i] = hex.hexToBin(IPv6Hex[i]);
+        }
+
+//input Subnetmask
+        System.out.println("And now the subnetmask please.");
+        subnetSlash = in.nextInt();
+
+//collects desired subnets and returns new subnetmask
+        String eingabe;
+        Scanner in3 = new Scanner(System.in);
+        System.out.println("How many networks do you want to make?");
+        numberOfNetworksDesired = in3.nextInt();
+        double numberOfBitsToFlip = log(numberOfNetworksDesired) / log(2);
+
+        newSubnetSlash = (int)(subnetSlash + numberOfBitsToFlip);
+        if(!(numberOfBitsToFlip % 2 == 0)){
+            numberOfBitsToFlip = (int)(numberOfBitsToFlip +1);
+        }
+
+        int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make vs.
+        int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
+    }
+}
+
     public class IPv4Calculator {
         public static void main(String[] args) {
-            IPv4.encoding();
-            IPv4.numberAndSizeOfNetworks();
+                IPv4.encoding();
+               IPv4.numberAndSizeOfNetworks();
 
 //gleichgroße Netze:
             if (IPv4.isSameSize) {
@@ -438,4 +564,8 @@ class IPv4 {
                 IPv4.differentSizeNetworks();
             }
         }
-    }
+ 
+
+        }
+    
+
