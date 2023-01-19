@@ -1,7 +1,7 @@
 /**
  * IPv4 Subnetting Calculator
- * Autor: Gisela Wolf
- * Datum: 31.12.2022
+ * author: Gisela Wolf
+ * date: 31.12.2022
  * Issues still to fix:
  * - Userproofing inputs
  * - problem: Same size nets in different size network option
