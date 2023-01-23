@@ -1,4 +1,4 @@
-package src; /**
+ /**
  * IPv4 Subnetting Calculator
  * author: Gisela Wolf
  * date: 23.01.2023
@@ -11,6 +11,7 @@ package src; /**
  * -
  */
 
+ package src;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -504,6 +505,7 @@ class IPv6 {
     IPv6() {
     }
 
+    //encoding complete, ADD SHORTFORM INPUT
     public static void encoding() {
         Scanner in = new Scanner(System.in);
 //input IP
@@ -549,6 +551,12 @@ class IPv6 {
 
         int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make vs.
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
+
+        System.out.println("Debug:------------------------"
+                            +"\r\n"  +"Hex String: " + Arrays.toString(IPv6Hex)
+                             +"\r\n"  +"Binary String: " +Arrays.toString(IPv6BinString)
+                            +"\r\n"  +"Subnetmask: " + newSubnetSlash);
+
     }
 }
 
