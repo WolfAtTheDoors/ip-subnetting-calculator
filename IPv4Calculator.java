@@ -553,20 +553,31 @@ class IPv6 {
 
     public class IPv4Calculator {
         public static void main(String[] args) {
+
+            System.out.println("IPv4 oder IPv6?");
+            Scanner in = new Scanner(System.in);
+            String eingabe = in.nextLine();
+
+            if(eingabe.equals(6)){
+               IPv6.encoding();
+            }
+
+
+            else if (eingabe.equals("4")) {
                 IPv4.encoding();
-               IPv4.numberAndSizeOfNetworks();
+                IPv4.numberAndSizeOfNetworks();
 
 //gleichgroße Netze:
-            if (IPv4.isSameSize) {
-                IPv4.sameSizeNetworks();
-            }
+                if (IPv4.isSameSize) {
+                    IPv4.sameSizeNetworks();
+                }
 //ungleiche Netze:
-            if (!IPv4.isSameSize) {
-                IPv4.differentSizeNetworks();
+                if (!IPv4.isSameSize) {
+                    IPv4.differentSizeNetworks();
+                }
             }
-        }
- 
 
         }
+    }
     
 
