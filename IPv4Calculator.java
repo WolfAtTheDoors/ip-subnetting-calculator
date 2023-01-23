@@ -558,7 +558,7 @@ class IPv6 {
             Scanner in = new Scanner(System.in);
             String eingabe = in.nextLine();
 
-            if(eingabe.equals(6)){
+            if(eingabe.equals("6")){
                IPv6.encoding();
             }
 
