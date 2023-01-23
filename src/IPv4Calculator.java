@@ -1,4 +1,4 @@
-/**
+package src; /**
  * IPv4 Subnetting Calculator
  * author: Gisela Wolf
  * date: 23.01.2023
