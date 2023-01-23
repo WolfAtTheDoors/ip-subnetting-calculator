@@ -1,13 +1,14 @@
 /**
  * IPv4 Subnetting Calculator
  * author: Gisela Wolf
- * date: 19.01.2023
+ * date: 23.01.2023
  * Issues still to fix:
+ * IPv4
  * - Userproofing inputs
  * - problem: Same size nets in different size network option
  * IPv6
  * - shortform input, padding rules
- * - test commit 3
+ * -
  */
 
 import java.util.Arrays;
