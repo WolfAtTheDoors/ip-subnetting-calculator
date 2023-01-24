@@ -8,10 +8,9 @@
  * - problem: Same size nets in different size network option
  * IPv6
  * - shortform input, padding rules
- * -
  */
 
- package src;
+package src;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,28 +49,33 @@ class hex{
 
 class IPv4 {
     //IP Adress
-    static int[] IPv4Dec = {0, 0, 0, 0};
+    private static int[] IPv4Dec = {0, 0, 0, 0};
     static int[] IPv4BinInt = {0, 0, 0, 0};
     static String[] IPv4BinString = {"0", "0", "0", "0"};
 
     //Subnetmask
-    static int[] subnetDec = {0, 0, 0, 0};
+    private static int[] subnetDec = {0, 0, 0, 0};
     static int[] subnetBinInt = {0, 0, 0, 0};
     static String[] subnetBinString = {"0", "0", "0", "0"};
 
     private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
-    static int numberOfNetworksDesired;
+    private static int numberOfNetworksDesired;
     static Integer[] numberOfHosts = new Integer[numberOfNetworksDesired];
     static boolean isSameSize = true;
 
-/*
-    public static int[] getSubnetDec() {
-        return subnetDec;
+    public static int getIPv4Dec(int index) {
+        return IPv4Dec[index];
     }
-    public static void setSubnetDec(int[] subnetDec) {
+    public static void setIPv4Dec(int IPv4Dec, int index) {
+        IPv4.IPv4Dec[index] = IPv4Dec;
+    }
+    public static int getSubnetDec(int index) {
+        return subnetDec[index];
+    }
+    public static void setSubnetDec(int subnetDec, int index) {
         if(true) {
-            IPv4.subnetDec = subnetDec;
+            IPv4.subnetDec[index] = subnetDec;
         }
     }
     public static int getSubnetSlash() {
@@ -86,13 +90,7 @@ class IPv4 {
     public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
         IPv4.numberOfNetworksDesired = numberOfNetworksDesired;
     }
-    public Integer[] getNumberOfHosts() {
-        return numberOfHosts;
-    }
-    public void setNumberOfHosts(Integer[] numberOfHosts) {
-        this.numberOfHosts = numberOfHosts;
-    }
-*/
+
 
     //Constructor
     IPv4() {
@@ -105,18 +103,18 @@ class IPv4 {
         System.out.println("Welcome to this IPv4 Calculator");
         System.out.println("First the IP-Adress:");
         System.out.println("Please enter the first octet:");
-        IPv4Dec[0] = in.nextInt();
+        setIPv4Dec(in.nextInt(), 0);
         System.out.println("Please enter the second octet:");
-        IPv4Dec[1] = in.nextInt();
+        setIPv4Dec(in.nextInt(), 1);
         System.out.println("Please enter the third octet:");
-        IPv4Dec[2] = in.nextInt();
+        setIPv4Dec(in.nextInt(), 2);
         System.out.println("Please enter the fourth octet:");
-        IPv4Dec[3] = in.nextInt();
+        setIPv4Dec(in.nextInt(), 3);
 
 //converts to binary
         for (int i = 0; i < IPv4Dec.length; i++) {
-            IPv4BinInt[i] = Integer.parseInt(Integer.toBinaryString(IPv4Dec[i]));
-            IPv4BinString[i] = Integer.toBinaryString(IPv4Dec[i]);
+            IPv4BinInt[i] = Integer.parseInt(Integer.toBinaryString(getIPv4Dec(i)));
+            IPv4BinString[i] = Integer.toBinaryString(getIPv4Dec(i));
             if (IPv4BinString[i].length() < 8) {
                 IPv4BinString[i] = String.format("%08d", IPv4BinInt[i]);
             }
@@ -128,23 +126,23 @@ class IPv4 {
 
         if(octetOrSlash.equals("O") || octetOrSlash.equals("o")) {
             System.out.println("Please enter the first octet:");
-            subnetDec[0] = in.nextInt();
+            setSubnetDec(in.nextInt(), 0);
             System.out.println("Please enter the second octet:");
-            subnetDec[1] = in.nextInt();
+            setSubnetDec(in.nextInt(), 1);
             System.out.println("Please enter the third octet:");
-            subnetDec[2] = in.nextInt();
+            setSubnetDec(in.nextInt(), 2);
             System.out.println("Please enter the fourth octet:");
-            subnetDec[3] = in.nextInt();
+            setSubnetDec(in.nextInt(), 3);
         }else if(octetOrSlash.equals("S") || octetOrSlash.equals("s")){
             System.out.println("Please enter the \\subnetmask");
-            subnetSlash = in.nextInt();
+            setSubnetSlash(in.nextInt());
         }
 
 //converts to binary and then to /-notation
         for (int i = 0; i < subnetDec.length; i++) {
-            subnetBinString[i] = Integer.toBinaryString(subnetDec[i]);
-            subnetBinInt[i] = Integer.parseInt(Integer.toBinaryString(subnetDec[i]));
-            subnetSlash = subnetSlash + Integer.bitCount(subnetDec[i]);
+            subnetBinString[i] = Integer.toBinaryString(getSubnetDec(i));
+            subnetBinInt[i] = Integer.parseInt(Integer.toBinaryString(getSubnetDec(i)));
+            setSubnetSlash(getSubnetSlash() + Integer.bitCount(getSubnetDec(i)));
 
             if (subnetBinString[i].length() < 8) {
                 subnetBinString[i] = String.format("%08d", subnetBinInt[i]);      //padding
@@ -157,7 +155,7 @@ class IPv4 {
         String eingabe;
         Scanner in3 = new Scanner(System.in);
         System.out.println("How many networks do you want to make?");
-        numberOfNetworksDesired = in3.nextInt();
+        setNumberOfNetworksDesired(in3.nextInt());
         System.out.println("Should the networks be of the same size? Y/N");
         Scanner in2 = new Scanner(System.in);
         eingabe = in2.nextLine();
@@ -187,7 +185,7 @@ class IPv4 {
 
         //determine number of bits to flip. Beware the floating point!
         // numberOfNetworksDesired vs numberOfNetworks made
-        double numberOfBitsToFlip = log(numberOfNetworksDesired) / log(2);
+        double numberOfBitsToFlip = log(getNumberOfNetworksDesired()) / log(2);
         int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
 
@@ -195,7 +193,7 @@ class IPv4 {
         //This is the good one. Number of bits is even and we proceed to make all the subnets we output
         int[][] iPv4BinOctetwise = new int[0][];
     if (numberOfBitsToFlip == numberOfBitsToFlipRoundedDown) {
-        int numberOfNetworksMade = numberOfNetworksDesired;
+        int numberOfNetworksMade = getNumberOfNetworksDesired();
         int[] counterDec = new int[numberOfNetworksMade];
         String[] counterBinString = new String[numberOfNetworksMade];
         int[] counterBinInt = new int[numberOfNetworksMade * numberOfBitsToFlipRoundedDown];
@@ -204,7 +202,7 @@ class IPv4 {
             //make array out of the bits we need to increment
             int[] flippingBitsArray = new int[numberOfBitsToFlipRoundedDown];
             for (int i = 1; i < numberOfBitsToFlip; i++) {
-                flippingBitsArray[i] = IPv4BinBitwise[subnetSlash + i];
+                flippingBitsArray[i] = IPv4BinBitwise[getSubnetSlash() + i];
             }
 
         //counter of increments +1 in Decimal
@@ -221,7 +219,7 @@ class IPv4 {
         }
 
             //feed those one by one back into the IP address to receive the variants (before ID and BA calc)
-            for (int i = 0; i < numberOfNetworksDesired; i++) {                      //for every network
+            for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                      //for every network
                 int iPv4DezOctet0 = 0;
                 int iPv4DezOctet1 = 0;
                 int iPv4DezOctet2 = 0;
@@ -231,11 +229,11 @@ class IPv4 {
                 int iPv4DezOctet2BA = 0;
                 int iPv4DezOctet3BA = 0;
                 for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {               //for every Bit
-                    IPv4BinBitwise[subnetSlash + j] = alternatesArray[i][j];
+                    IPv4BinBitwise[getSubnetSlash() + j] = alternatesArray[i][j];
 
                 //ID
                     //All host bits to zero
-                    for (int x = subnetSlash + (int)numberOfBitsToFlip; x < 32; x++) {
+                    for (int x = getSubnetSlash() + (int)numberOfBitsToFlip; x < 32; x++) {
                         IPv4BinBitwise[x] = 0;
                     }
                     //Seperate into Octets
@@ -256,7 +254,7 @@ class IPv4 {
                 //BA
                     //All host bits to one
                    // int[] IPv4BinBitwiseBA = IPv4BinBitwise;
-                    for (int x = subnetSlash +((int)numberOfBitsToFlip); x < 32; x++) {
+                    for (int x = getSubnetSlash() +((int)numberOfBitsToFlip); x < 32; x++) {
                         IPv4BinBitwise[x] = 1;
                     }
                     int[] iPv4BinOctet0BA = Arrays.copyOfRange(IPv4BinBitwise, 0, 8);
@@ -300,14 +298,14 @@ class IPv4 {
                 }
             }
 
-            for (int i = 0; i < numberOfNetworksDesired; i++) {                                 //for every network
+            for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                                 //for every network
                 for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {               //for every Bit
-                    IPv4BinBitwise[subnetSlash + j] = alternatesArray2[i][j];
+                    IPv4BinBitwise[getSubnetSlash() + j] = alternatesArray2[i][j];
                 }
 
                 //ID
                 //All host bits to zero
-                for (int x = subnetSlash + numberOfBitsToFlipRoundedUp; x < 32; x++){
+                for (int x = getSubnetSlash() + numberOfBitsToFlipRoundedUp; x < 32; x++){
                     IPv4BinBitwise[x] = 0;
                          }
 
@@ -331,7 +329,7 @@ class IPv4 {
                 //BA
                 //All host bits to one
                 int[]IPv4BinBitwiseBA = IPv4BinBitwise;
-                for (int x = subnetSlash + numberOfBitsToFlipRoundedUp; x < 32; x++) {
+                for (int x = getSubnetSlash() + numberOfBitsToFlipRoundedUp; x < 32; x++) {
                    IPv4BinBitwiseBA[x] = 1;
                 }
                 int[] iPv4BinOctet0BA = Arrays.copyOfRange(IPv4BinBitwiseBA, 0, 8);
@@ -353,7 +351,7 @@ class IPv4 {
                 int counter = 0;
                 counter ++;
 
-                if (counter < numberOfNetworksDesired) {
+                if (counter < getNumberOfNetworksDesired()) {
                     System.out.println("**===================**"
                             + "\r\n" + "ID: " + iPv4DezOctet0 + "." + iPv4DezOctet1 + "." + iPv4DezOctet2 + "." + iPv4DezOctet3
                             + "\r\n" + "BA: " + iPv4DezOctet0BA + "." + iPv4DezOctet1BA + "." + iPv4DezOctet2BA + "." + iPv4DezOctet3BA
@@ -366,7 +364,7 @@ class IPv4 {
     //Networks of different sizes
     public static void differentSizeNetworks() {
         Scanner in = new Scanner(System.in);
-        int[] nearestPowerOfTwo = new int[numberOfNetworksDesired];
+        int[] nearestPowerOfTwo = new int[getNumberOfNetworksDesired()];
         int numberOfTotalHosts = 0;
         int numberOfTotalHostsPossible = 0;
         String IPv4BinStringAll = "";
@@ -374,7 +372,7 @@ class IPv4 {
         int[] IPv4BinBitwiseBA = new int[32];
 
         //get the number of hosts and turn into numberOfHosts[] per Network desired
-        for (int i = 0; i < numberOfNetworksDesired; i++) {
+        for (int i = 0; i < getNumberOfNetworksDesired(); i++) {
             System.out.println("Enter the number of hosts for Network " + (i+1));
             numberOfHosts[i] = in.nextInt() +2;       //+2 für ID und BA
             nearestPowerOfTwo[i] = (int)pow(2, ceil(log(numberOfHosts[i])/log(2)));
@@ -401,10 +399,10 @@ class IPv4 {
          */
 
         //total of entered hosts, compare to number of possible hosts
-        for (int i = 0; i < numberOfNetworksDesired; i++){
+        for (int i = 0; i < getNumberOfNetworksDesired(); i++){
             numberOfTotalHosts = numberOfTotalHosts + numberOfHosts[i];
         }
-        numberOfTotalHostsPossible = (int)Math.pow(2, 32-subnetSlash);
+        numberOfTotalHostsPossible = (int)Math.pow(2, 32-getSubnetSlash());
         if(numberOfTotalHosts <= numberOfTotalHostsPossible) {
 
             //turn IP into String
@@ -416,15 +414,15 @@ class IPv4 {
                 IPv4BinBitwise[i] = Character.getNumericValue(IPv4BinStringAllArray[i]);
             }
             //set all Host bits to zero
-            for (int i = subnetSlash; i < 32; i++){
+            for (int i = getSubnetSlash(); i < 32; i++){
                 IPv4BinBitwise[i] = 0;
             }
 
             //here starts the big for loop, one for each new subnet
-            for (int i = 0; i < numberOfNetworksDesired; i++) {
+            for (int i = 0; i < getNumberOfNetworksDesired(); i++) {
                 //subnetzSlash      <-starting subnetmask
                 //Determine new subnetzmask
-                newSubnetSlash = subnetSlash + (log(numberOfTotalHostsPossible/numberOfHosts[i])/log(2));
+                newSubnetSlash = getSubnetSlash() + (log(numberOfTotalHostsPossible/numberOfHosts[i])/log(2));
 
                 //apply newSubnetSlash to IPv4BinBitwise and save the result
                 IPv4BinBitwise[(int)newSubnetSlash -2] = 1;
@@ -484,9 +482,8 @@ class IPv4 {
 
             //Fehler für zuviele Hosts
         }else{
-            System.out.println("I'm sorry but that is too many hosts \\" +subnetSlash +" Netz.");
+            System.out.println("I'm sorry but that is too many hosts \\" +getSubnetSlash() +" Netz.");
         }
-
     }
 }
 
@@ -496,10 +493,31 @@ class IPv6 {
     static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
 
+    public static String getIPv6Hex(int index) {
+        return IPv6Hex[index];
+    }
+    public static void setIPv6Hex(String IPv6Hex, int index) {
+        IPv6.IPv6Hex[index] = IPv6Hex;
+    }
+
     //Subnetmask
-    static int subnetSlash = 0;
+    private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
-    static int numberOfNetworksDesired;
+    private static int numberOfNetworksDesired;
+
+    public static int getSubnetSlash() {
+        return subnetSlash;
+    }
+    public static void setSubnetSlash(int subnetSlash) {
+        IPv6.subnetSlash = subnetSlash;
+    }
+    public static int getNumberOfNetworksDesired() {
+        return numberOfNetworksDesired;
+    }
+    public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
+        IPv6.numberOfNetworksDesired = numberOfNetworksDesired;
+    }
+
 
     //Constructor
     IPv6() {
@@ -512,39 +530,39 @@ class IPv6 {
         System.out.println("Welcome to this IPv6 Calculator");
         System.out.println("First the IP-Adress, in longform please:");
         System.out.println("Please enter the first octet:");
-        IPv6Hex[0] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 0);
         System.out.println("Please enter the second octet:");
-        IPv6Hex[1] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 1);
         System.out.println("Please enter the third octet:");
-        IPv6Hex[2] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 2);
         System.out.println("Please enter the fourth octet:");
-        IPv6Hex[3] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 3);
         System.out.println("Please enter the fifth octet:");
-        IPv6Hex[4] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 4);
         System.out.println("Please enter the sixth octet:");
-        IPv6Hex[5] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 5);
         System.out.println("Please enter the seventh octet:");
-        IPv6Hex[6] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 6);
         System.out.println("Please enter the eights octet:");
-        IPv6Hex[7] = in.nextLine();
+        setIPv6Hex(in.nextLine(), 7);
 
 //converts to binary
         for (int i = 0; i < 8; i++) {
-            IPv6BinString[i] = hex.hexToBin(IPv6Hex[i]);
+            IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i));
         }
 
 //input Subnetmask
         System.out.println("And now the subnetmask please.");
-        subnetSlash = in.nextInt();
+        setSubnetSlash(in.nextInt());
 
 //collects desired subnets and returns new subnetmask
         String eingabe;
         Scanner in3 = new Scanner(System.in);
         System.out.println("How many networks do you want to make?");
-        numberOfNetworksDesired = in3.nextInt();
-        double numberOfBitsToFlip = log(numberOfNetworksDesired) / log(2);
+        setNumberOfNetworksDesired(in3.nextInt());
+        double numberOfBitsToFlip = log(getNumberOfNetworksDesired()) / log(2);
 
-        newSubnetSlash = (int)(subnetSlash + numberOfBitsToFlip);
+        newSubnetSlash = (int)(getSubnetSlash() + numberOfBitsToFlip);
         if(!(numberOfBitsToFlip % 2 == 0)){
             numberOfBitsToFlip = (int)(numberOfBitsToFlip +1);
         }
@@ -554,7 +572,7 @@ class IPv6 {
 
         System.out.println("Debug:------------------------"
                             +"\r\n"  +"Hex String: " + Arrays.toString(IPv6Hex)
-                             +"\r\n"  +"Binary String: " +Arrays.toString(IPv6BinString)
+                            +"\r\n"  +"Binary String: " +Arrays.toString(IPv6BinString)
                             +"\r\n"  +"Subnetmask: " + newSubnetSlash);
 
     }
