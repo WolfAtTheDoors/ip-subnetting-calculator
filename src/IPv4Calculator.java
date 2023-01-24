@@ -11,6 +11,8 @@
  */
 
 package src;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.lang.String;
 import static java.lang.Math.*;
 
 class hex{
-    public static String hexToBin(String hex){
+    public static @NotNull String hexToBin(String hex){
         hex = hex.replaceAll("0", "0000");
         hex = hex.replaceAll("1", "0001");
         hex = hex.replaceAll("2", "0010");
@@ -61,26 +63,43 @@ class IPv4 {
     private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
     private static int numberOfNetworksDesired;
-    static Integer[] numberOfHosts = new Integer[numberOfNetworksDesired];
     static boolean isSameSize = true;
-
+    static boolean input = true;
     public static int getIPv4Dec(int index) {
         return IPv4Dec[index];
     }
     public static void setIPv4Dec(int IPv4Dec, int index) {
-        IPv4.IPv4Dec[index] = IPv4Dec;
+        if (IPv4Dec > 0 && IPv4Dec < 256) {
+            IPv4.IPv4Dec[index] = IPv4Dec;
+            input = true;
+        } else {
+            input = false;
+            System.out.println("That is not a valid octet. Please try again");
+        }
     }
     public static int getSubnetDec(int index) {
         return subnetDec[index];
     }
     public static void setSubnetDec(int subnetDec, int index) {
-            IPv4.subnetDec[index] = subnetDec;
+        if (subnetDec > 0 && subnetDec < 256) {
+        IPv4.subnetDec[index] = subnetDec;
+        input = true;
+    } else {
+        input = false;
+        System.out.println("That is not a valid octet. Please try again");
+    }
     }
     public static int getSubnetSlash() {
         return subnetSlash;
     }
     public static void setSubnetSlash(int subnetSlash) {
-        IPv4.subnetSlash = subnetSlash;
+        if (subnetSlash > 0 && subnetSlash < 33) {
+            IPv4.subnetSlash = subnetSlash;
+            input = true;
+        }else{
+            System.out.println("That is not a valid subnetmask. Please try again");
+            input = false;
+        }
     }
     public static int getNumberOfNetworksDesired() {
         return numberOfNetworksDesired;
@@ -89,25 +108,23 @@ class IPv4 {
         IPv4.numberOfNetworksDesired = numberOfNetworksDesired;
     }
 
-
     //Constructor
     IPv4() {
     }
 
     //collects IP and subnetmask and converts them to binary and slash-notation
     public static void encoding() {
+        //input IP
         Scanner in = new Scanner(System.in);
-//input IP
         System.out.println("Welcome to this IPv4 Calculator");
         System.out.println("First the IP-Adress:");
-        System.out.println("Please enter the first octet:");
-        setIPv4Dec(in.nextInt(), 0);
-        System.out.println("Please enter the second octet:");
-        setIPv4Dec(in.nextInt(), 1);
-        System.out.println("Please enter the third octet:");
-        setIPv4Dec(in.nextInt(), 2);
-        System.out.println("Please enter the fourth octet:");
-        setIPv4Dec(in.nextInt(), 3);
+            for (int i = 1; i < 5; i++) {
+                while(true) {
+                    System.out.println("Please enter the " + i + ". octet:");
+                    setIPv4Dec(in.nextInt(), i - 1);
+                    if(input){break;}
+                }
+            }
 
 //converts to binary
         for (int i = 0; i < IPv4Dec.length; i++) {
@@ -117,25 +134,30 @@ class IPv4 {
                 IPv4BinString[i] = String.format("%08d", IPv4BinInt[i]);
             }
         }
+
 //input Subnetmask
         System.out.println("And now the subnetmask please. Do you wish to enter it in octets (O) or slash-notation (S)? ");
         Scanner in2 = new Scanner(System.in);
         String octetOrSlash = in2.nextLine();
 
         if(octetOrSlash.equals("O") || octetOrSlash.equals("o")) {
-            System.out.println("Please enter the first octet:");
-            setSubnetDec(in.nextInt(), 0);
-            System.out.println("Please enter the second octet:");
-            setSubnetDec(in.nextInt(), 1);
-            System.out.println("Please enter the third octet:");
-            setSubnetDec(in.nextInt(), 2);
-            System.out.println("Please enter the fourth octet:");
-            setSubnetDec(in.nextInt(), 3);
-        }else if(octetOrSlash.equals("S") || octetOrSlash.equals("s")){
-            System.out.println("Please enter the \\subnetmask");
-            setSubnetSlash(in.nextInt());
-        }
+            for (int i = 1; i < 5; i++) {
+                while(true){
+                    System.out.println("Please enter the " + i + ". octet:");
+                    setSubnetDec(in.nextInt(), i - 1);
+                    if(input){break;}
+                }
+            }
 
+        }else if(octetOrSlash.equals("S") || octetOrSlash.equals("s")) {
+            while (true) {
+                System.out.println("Please enter the \\subnetmask");
+                setSubnetSlash(in2.nextInt());
+                if (input) {
+                    break;
+                }
+            }
+        }
 //converts to binary and then to /-notation
         for (int i = 0; i < subnetDec.length; i++) {
             subnetBinString[i] = Integer.toBinaryString(getSubnetDec(i));
@@ -157,6 +179,7 @@ class IPv4 {
         System.out.println("Should the networks be of the same size? Y/N");
         Scanner in2 = new Scanner(System.in);
         eingabe = in2.nextLine();
+        System.out.println("Debug network number: " +getNumberOfNetworksDesired());
 
 //are the networks of the same size?
         if (eingabe.equals("N") || eingabe.equals("n")) {
@@ -368,6 +391,7 @@ class IPv4 {
         String IPv4BinStringAll = "";
         int[] IPv4BinBitwise = new int[32];
         int[] IPv4BinBitwiseBA = new int[32];
+        Integer[] numberOfHosts = new Integer[numberOfNetworksDesired];
 
         //get the number of hosts and turn into numberOfHosts[] per Network desired
         for (int i = 0; i < getNumberOfNetworksDesired(); i++) {
@@ -587,8 +611,8 @@ class IPv6 {
                String eingabe = in.nextLine();
 //IPv6
                if (eingabe.equals("6")) {
+                   input = true;
                    IPv6.encoding();
-                    input = true;
 //IPv4
                } else if (eingabe.equals("4")) {
                    input = true;
