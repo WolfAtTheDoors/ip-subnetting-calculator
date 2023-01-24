@@ -74,9 +74,7 @@ class IPv4 {
         return subnetDec[index];
     }
     public static void setSubnetDec(int subnetDec, int index) {
-        if(true) {
             IPv4.subnetDec[index] = subnetDec;
-        }
     }
     public static int getSubnetSlash() {
         return subnetSlash;
@@ -489,7 +487,7 @@ class IPv4 {
 
 class IPv6 {
     //IP Adress
-    static String[] IPv6Hex = {"abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd"};
+    private static String[] IPv6Hex = {"abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd"};
     static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -571,9 +569,10 @@ class IPv6 {
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
 
         System.out.println("Debug:------------------------"
-                            +"\r\n"  +"Hex String: " + Arrays.toString(IPv6Hex)
+                            +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
                             +"\r\n"  +"Binary String: " +Arrays.toString(IPv6BinString)
-                            +"\r\n"  +"Subnetmask: " + newSubnetSlash);
+                            +"\r\n"  +"Subnetmask: "    +newSubnetSlash
+                            +"----------------------------");
 
     }
 }
@@ -588,7 +587,6 @@ class IPv6 {
             if(eingabe.equals("6")){
                IPv6.encoding();
             }
-
 
             else if (eingabe.equals("4")) {
                 IPv4.encoding();
