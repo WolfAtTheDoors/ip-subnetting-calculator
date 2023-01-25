@@ -527,26 +527,28 @@ class IPv4 {
 
 class IPv6 {
     //IP Adress
-    private static String[] IPv6Hex = {"abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd"};
+    private static int[] IPv6Hex = {0xabcd, 0xabcd, 0xabcd, 0xabcd, 0xabcd, 0xabcd, 0xabcd, 0xabcd};
     static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
-    boolean input = true;
-    public static String getIPv6Hex(int index) {
+    static boolean input = true;
+    public static int getIPv6Hex(int index) {
         return IPv6Hex[index];
     }
-    public static void setIPv6Hex(String IPv6Hex, int index) {
-        IPv6.IPv6Hex[index] = IPv6Hex;
-/*
-            if (IPv6Hex > 0 && IPv6Hex < FFFF) {
-                IPv4.IPv6Hex[index] = IPv6Hex;
+    public static void setIPv6Hex(int IPv6Hex, int index) {
+
+            if (IPv6Hex > 0 && IPv6Hex < 0xffff) {
+                /*
+                if (IPv6Hex.length() < 4) {
+                    setIPv6Hex(String.format("%04x", IPv6Hex), i);      //padding
+                }*/
+
+                IPv6.IPv6Hex[index] = IPv6Hex;
                 input = true;
             } else {
                 input = false;
                 System.out.println("That is not a valid octet. Please try again");
             }
         }
-        */
-    }
 
     //Subnetmask
     private static int subnetSlash = 0;
@@ -575,14 +577,16 @@ class IPv6 {
 //input IP
         System.out.println("Welcome to this IPv6 Calculator");
         System.out.println("First the IP-Adress.");
+
         for(int i = 0; i<8; i++) {
             System.out.println("Please enter the " +i+1 +". octet:");
-            setIPv6Hex(in.nextLine(), i);
+            setIPv6Hex(in.nextInt(), i);
         }
+
 //converts to binary
-        for (int i = 0; i < 8; i++) {
-            IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i));
-        }
+     //   for (int i = 0; i < 8; i++) {
+     //       IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i)));
+     //   }
 
 //input Subnetmask
         System.out.println("And now the subnetmask please.");
