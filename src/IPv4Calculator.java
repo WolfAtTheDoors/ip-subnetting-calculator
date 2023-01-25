@@ -5,8 +5,7 @@
 * Issues still to fix:
 * IPv4
 * - Userproofing inputs
-* - number of Hosts
-* - number of networks (!)
+* - number of networks by subnetmask(!)
 * - problem: Same size nets in different size network option
 * IPv6
 * - shortform input, padding rules
@@ -531,19 +530,28 @@ class IPv6 {
     private static String[] IPv6Hex = {"abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd", "abcd"};
     static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
-
+    boolean input = true;
     public static String getIPv6Hex(int index) {
         return IPv6Hex[index];
     }
     public static void setIPv6Hex(String IPv6Hex, int index) {
         IPv6.IPv6Hex[index] = IPv6Hex;
+/*
+            if (IPv6Hex > 0 && IPv6Hex < FFFF) {
+                IPv4.IPv6Hex[index] = IPv6Hex;
+                input = true;
+            } else {
+                input = false;
+                System.out.println("That is not a valid octet. Please try again");
+            }
+        }
+        */
     }
 
     //Subnetmask
     private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
     private static int numberOfNetworksDesired;
-
     public static int getSubnetSlash() {
         return subnetSlash;
     }
@@ -557,7 +565,6 @@ class IPv6 {
         IPv6.numberOfNetworksDesired = numberOfNetworksDesired;
     }
 
-
     //Constructor
     IPv6() {
     }
@@ -567,24 +574,11 @@ class IPv6 {
         Scanner in = new Scanner(System.in);
 //input IP
         System.out.println("Welcome to this IPv6 Calculator");
-        System.out.println("First the IP-Adress, in longform please:");
-        System.out.println("Please enter the first octet:");
-        setIPv6Hex(in.nextLine(), 0);
-        System.out.println("Please enter the second octet:");
-        setIPv6Hex(in.nextLine(), 1);
-        System.out.println("Please enter the third octet:");
-        setIPv6Hex(in.nextLine(), 2);
-        System.out.println("Please enter the fourth octet:");
-        setIPv6Hex(in.nextLine(), 3);
-        System.out.println("Please enter the fifth octet:");
-        setIPv6Hex(in.nextLine(), 4);
-        System.out.println("Please enter the sixth octet:");
-        setIPv6Hex(in.nextLine(), 5);
-        System.out.println("Please enter the seventh octet:");
-        setIPv6Hex(in.nextLine(), 6);
-        System.out.println("Please enter the eights octet:");
-        setIPv6Hex(in.nextLine(), 7);
-
+        System.out.println("First the IP-Adress.");
+        for(int i = 0; i<8; i++) {
+            System.out.println("Please enter the " +i+1 +". octet:");
+            setIPv6Hex(in.nextLine(), i);
+        }
 //converts to binary
         for (int i = 0; i < 8; i++) {
             IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i));
@@ -611,8 +605,8 @@ class IPv6 {
 
         System.out.println("Debug:------------------------"
                             +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
-                            +"\r\n"  +"Binary String: " +Arrays.toString(IPv6BinString)
-                            +"\r\n"  +"Subnetmask: "    +newSubnetSlash
+                            +"\r\n"  +"Binary String: " + Arrays.toString(IPv6BinString)
+                            +"\r\n"  +"Subnetmask: "    + newSubnetSlash
                             +"----------------------------");
 
     }
