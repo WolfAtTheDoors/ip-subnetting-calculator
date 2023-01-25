@@ -1,15 +1,17 @@
  /**
- * IPv4 Subnetting Calculator
- * author: Gisela Wolf
- * date: 23.01.2023
- * Issues still to fix:
- * IPv4
- * - Userproofing inputs
- *     - number of Hosts
-  *    - number of networks (!)
- * - problem: Same size nets in different size network option
- * IPv6
- * - shortform input, padding rules
+* IPv4 Subnetting Calculator
+* author: Gisela Wolf
+* date: 23.01.2023
+* Issues still to fix:
+* IPv4
+* - Userproofing inputs
+* - number of Hosts
+* - number of networks (!)
+* - problem: Same size nets in different size network option
+* IPv6
+* - shortform input, padding rules
+* - output
+* - Userproofing
  */
 
 package src;
@@ -66,7 +68,7 @@ class IPv4 {
     private static int numberOfNetworksDesired;
     static boolean isSameSize = true;
     static boolean input = true;
-    static boolean input2 = false;
+    static boolean input2 = true;
 
     public static int getIPv4Dec(int index) {
         return IPv4Dec[index];
@@ -84,7 +86,7 @@ class IPv4 {
         return subnetDec[index];
     }
     public static void setSubnetDec(int subnetDec, int index) {
-        if (subnetDec > 0 && subnetDec < 256) {
+        if (subnetDec >= 0 && subnetDec < 256) {
         IPv4.subnetDec[index] = subnetDec;
         input = true;
     } else {
@@ -108,101 +110,14 @@ class IPv4 {
         return numberOfNetworksDesired;
     }
     public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
-        if(subnetSlash == 30 && numberOfNetworksDesired > 2){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
+        for (int i = 8; i < 22; i++) {
+            if (IPv4.getSubnetSlash() == i && getNumberOfNetworksDesired() > (Math.pow(2, i) - 2)) {
+                System.out.println("That are too many networks for the subnetmask");
+                input2 = false;
+            }
         }
-        if(subnetSlash == 29 && numberOfNetworksDesired > 6){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 28 && numberOfNetworksDesired > 14){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 27 && numberOfNetworksDesired > 30){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 26 && numberOfNetworksDesired > 62){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 25 && numberOfNetworksDesired > 126){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 24 && numberOfNetworksDesired > 253){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 23 && numberOfNetworksDesired > 510){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 22 && numberOfNetworksDesired > 1022){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 21 && numberOfNetworksDesired > 2046){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 20 && numberOfNetworksDesired > 4094){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 19 && numberOfNetworksDesired > 8190){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 18 && numberOfNetworksDesired > 16382){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 17 && numberOfNetworksDesired > 32766){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 16 && numberOfNetworksDesired > 65534){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 15 && numberOfNetworksDesired > 131070){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 14 && numberOfNetworksDesired > 262142){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 13 && numberOfNetworksDesired > 524286){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 12 && numberOfNetworksDesired > 1048574){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 11 && numberOfNetworksDesired > 2097150){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 10 && numberOfNetworksDesired > 4194302){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 9 && numberOfNetworksDesired > 8388606){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        if(subnetSlash == 8 && numberOfNetworksDesired > 16777214){
-            System.out.println("That are too many networks for the subnetmask");
-            input = false;
-        }
-        else {
+        if (input) {
             IPv4.numberOfNetworksDesired = numberOfNetworksDesired;
-            input2 = true;
         }
     }
 
@@ -269,7 +184,7 @@ class IPv4 {
     }
 
     // query for number and size of subnets
-    public static void numberAndSizeOfNetworks() {                           //collects desired subnets and returns new subnetmask, ID and BA and number of hosts
+    public static void numberAndSizeOfNetworks() {                                //collects desired subnets and returns new subnetmask, ID and BA and number of hosts
         String eingabe;
         while(true) {
             System.out.println("How many networks do you want to make?");
@@ -277,6 +192,7 @@ class IPv4 {
             setNumberOfNetworksDesired(in3.nextInt());
             if(input2){break;}
         }
+        System.out.println("debug: " +input);
 
         System.out.println("Should the networks be of the same size? Y/N");
         Scanner in2 = new Scanner(System.in);
@@ -421,7 +337,7 @@ class IPv4 {
             }
 
             for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                                 //for every network
-                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {               //for every Bit
+                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {                             //for every Bit
                     IPv4BinBitwise[getSubnetSlash() + j] = alternatesArray2[i][j];
                 }
 
