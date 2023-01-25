@@ -535,9 +535,10 @@ class IPv6 {
         return IPv6Hex[index];
     }
     public static void setIPv6Hex(String IPv6Hex, int index) {
+        //IPv6.IPv6Hex[index] = String.valueOf(IPv6Hex);
 
         if (String.valueOf(IPv6Hex).length() < 4) {
-            IPv6.IPv6Hex[index] = String.format("%04x", IPv6Hex);
+            IPv6.IPv6Hex[index] = String.format("%04x", Integer.valueOf(IPv6Hex));
         } else {
             IPv6.IPv6Hex[index] = String.valueOf(IPv6Hex);
         }
