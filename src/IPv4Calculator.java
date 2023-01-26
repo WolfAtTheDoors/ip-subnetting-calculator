@@ -531,14 +531,15 @@ class IPv6 {
     static String[] IPv6BinString = {"0000", "0000", "0000", "0000", "0000", "0000", "0000", "0000"};
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
     static boolean input = true;
+    static boolean input2 = false;
     public static String getIPv6Hex(int index) {
         return IPv6Hex[index];
     }
     public static void setIPv6Hex(String IPv6Hex, int index) {
-        //IPv6.IPv6Hex[index] = String.valueOf(IPv6Hex);
 
+        //input too short
         if (String.valueOf(IPv6Hex).length() < 4) {
-            IPv6.IPv6Hex[index] = String.format("%04x", Integer.valueOf(IPv6Hex));
+            IPv6.IPv6Hex[index] = String.format("%1$" + 4 + "s", IPv6Hex).replace(' ', '0');
         } else {
             IPv6.IPv6Hex[index] = String.valueOf(IPv6Hex);
         }
@@ -568,15 +569,27 @@ class IPv6 {
     //encoding complete, ADD SHORTFORM INPUT
     public static void encoding() {
         Scanner in = new Scanner(System.in);
-//input IP
         System.out.println("Welcome to this IPv6 Calculator");
         System.out.println("First the IP-Adress.");
 
+//input IP
         for(int i = 0; i<8; i++) {
-            System.out.println("Please enter the " +(i+1) +". octet:");
-            setIPv6Hex(in.nextLine(), i);
-        }
+            while (!input2) {
+                System.out.println("Please enter the " + (i + 1) + ". octet:");
+                String eingabe = in.nextLine();
+                //test the hex input
+                //wrong letters
+                //too long
 
+                if (eingabe.length() > 4) {
+                    System.out.println("That number is too long.");
+                    input2 = false;
+                }else {
+                    setIPv6Hex(eingabe, i);
+                    break;
+                }
+            }
+        }
 //converts to binary
         for (int i = 0; i < 8; i++) {
             IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i));
