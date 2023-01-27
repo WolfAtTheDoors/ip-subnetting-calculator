@@ -568,28 +568,53 @@ class IPv6 {
 
     //encoding complete, ADD SHORTFORM INPUT
     public static void encoding() {
+        char[] hexChar = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F'};
+
         Scanner in = new Scanner(System.in);
         System.out.println("Welcome to this IPv6 Calculator");
         System.out.println("First the IP-Adress.");
+        boolean input3 = true;
+        String eingabe;
 
 //input IP
-        for(int i = 0; i<8; i++) {
-            while (!input2) {
-                System.out.println("Please enter the " + (i + 1) + ". octet:");
-                String eingabe = in.nextLine();
-                //test the hex input
-                //wrong letters
-                //too long
+        //test input for length and correct chars
+            for(int i = 0; i<8; i++) {
+                do {
+                    do {
+                        System.out.println("Please enter the " + (i + 1) + ". quartet:");
+                        eingabe = in.nextLine();
+                        boolean[] eingabeBool = new boolean[eingabe.length()];
 
-                if (eingabe.length() > 4) {
+                        //test the hex input
+                        //wrong letters
+                        for (int j = 0; j < eingabe.length(); j++) {
+                            for (int k = 0; k < 22; k++) {
+                                if (eingabe.charAt(j) == hexChar[k]) {
+                                    eingabeBool[j] = true;
+                                }
+                            }
+                        }
+                        for (int x = 0; x < eingabe.length(); x++) {
+                            if (!eingabeBool[x]) {
+                                System.out.println("That is not a valid hex number");
+                                input3 = false;
+                            }else{
+                                input3 = true;
+                            }
+                        }
+                    }while (!input3);
+                //too long
+                    if (eingabe.length() > 4) {
                     System.out.println("That number is too long.");
                     input2 = false;
                 }else {
                     setIPv6Hex(eingabe, i);
+                    input2 = true;
                     break;
-                }
+                   }
+                }while (!input2);
             }
-        }
+
 //converts to binary
         for (int i = 0; i < 8; i++) {
             IPv6BinString[i] = hex.hexToBin(getIPv6Hex(i));
@@ -600,7 +625,6 @@ class IPv6 {
         setSubnetSlash(in.nextInt());
 
 //collects desired subnets and returns new subnetmask
-        String eingabe;
         Scanner in3 = new Scanner(System.in);
         System.out.println("How many networks do you want to make?");
         setNumberOfNetworksDesired(in3.nextInt());
