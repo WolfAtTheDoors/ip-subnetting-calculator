@@ -583,6 +583,10 @@ class IPv6 {
                     do {
                         System.out.println("Please enter the " + (i + 1) + ". quartet:");
                         eingabe = in.nextLine();
+
+                        if(eingabe.isEmpty()){
+                            eingabe = "0000";
+                        }
                         boolean[] eingabeBool = new boolean[eingabe.length()];
 
                         //test the hex input
@@ -642,7 +646,7 @@ class IPv6 {
                             +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
                             +"\r\n"  +"Binary String: " + Arrays.toString(IPv6BinString)
                             +"\r\n"  +"Subnetmask: "    + newSubnetSlash
-                            +"----------------------------");
+                            +"\r\n"  +"----------------------------");
 
     }
 }
