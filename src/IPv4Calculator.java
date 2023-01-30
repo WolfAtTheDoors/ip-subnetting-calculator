@@ -534,7 +534,6 @@ class IPv6 {
     public static String getIPv6Hex(int index) {
         return IPv6Hex[index];
     }
-
     public static void setIPv6Hex(String IPv6Hex, int index) {
 
         //input too short
@@ -553,15 +552,12 @@ class IPv6 {
     public static int getSubnetSlash() {
         return subnetSlash;
     }
-
     public static void setSubnetSlash(int subnetSlash) {
         IPv6.subnetSlash = subnetSlash;
     }
-
     public static int getNumberOfNetworksDesired() {
         return numberOfNetworksDesired;
     }
-
     public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
         IPv6.numberOfNetworksDesired = numberOfNetworksDesired;
     }
@@ -570,7 +566,7 @@ class IPv6 {
     IPv6() {
     }
 
-    //encoding complete, ADD SHORTFORM INPUT
+    //collect input (IP and Subnetmask) and convert into binary
     public static void encoding() {
         char[] hexChar = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F'};
 
@@ -647,7 +643,8 @@ class IPv6 {
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
     }
 
-    public static void numberOfNetworks() {                                //collects desired subnets and returns new subnetmask, ID and BA and number of hosts
+    //collects desired subnets and returns new subnetmask
+    public static void numberOfNetworks() {
         String eingabe;
         while (true) {
             System.out.println("How many networks do you want to make?");
@@ -657,7 +654,6 @@ class IPv6 {
                 break;
             }
         }
-        System.out.println();
 
 
 
@@ -670,6 +666,206 @@ class IPv6 {
 
 
     }
+
+    public static void sameSizeNetworks() {
+        String IPv6BinStringAll = "";
+        int[] IPv6BinBitwise = new int[128];
+
+//turn into in bitwise array
+        //turn into String
+        IPv6BinStringAll = IPv6BinStringAll.concat(IPv6BinString[0]).concat(IPv6BinString[1]).concat(IPv6BinString[2])
+                                            .concat(IPv6BinString[3]).concat(IPv6BinString[4]).concat(IPv6BinString[5])
+                                            .concat(IPv6BinString[6]).concat(IPv6BinString[7]);
+        //turn into char array
+        char[] IPv6BinStringAllArray = IPv6BinStringAll.toCharArray();
+        //turn into int array
+        for (int i = 0; i < 128; i++) {
+            IPv6BinBitwise[i] = Character.getNumericValue(IPv6BinStringAllArray[i]);
+        }
+
+        //determine number of bits to flip. Beware the floating point!
+        // numberOfNetworksDesired vs numberOfNetworks made
+        double numberOfBitsToFlip = log(getNumberOfNetworksDesired()) / log(2);
+        int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make
+        int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
+
+        //this is where the magic of subnetting happens
+        //This is the good one. Number of bits is even and we proceed to make all the subnets we output
+        int[][] iPv6BinQuartetwise = new int[0][];
+        if (numberOfBitsToFlip == numberOfBitsToFlipRoundedDown) {
+            int numberOfNetworksMade = getNumberOfNetworksDesired();
+            int[] counterDec = new int[numberOfNetworksMade];
+            String[] counterBinString = new String[numberOfNetworksMade];
+            int[] counterBinInt = new int[numberOfNetworksMade * numberOfBitsToFlipRoundedDown];
+            int[][] alternatesArray = new int[numberOfNetworksMade][numberOfBitsToFlipRoundedDown];             //bits to flip even
+
+            //make array out of the bits we need to increment
+            int[] flippingBitsArray = new int[numberOfBitsToFlipRoundedDown];
+            for (int i = 1; i < numberOfBitsToFlip; i++) {
+                flippingBitsArray[i] = IPv6BinBitwise[getSubnetSlash() + i];
+            }
+
+            //counter of increments +1 in Decimal
+            //counter of increments in binary (+padding)
+            //alternatesArray[i][j]  i counts down, j counts across
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterDec[i] = i;
+                counterBinString[i] = Integer.toBinaryString(counterDec[i]);
+                counterBinInt[i] = Integer.parseInt(counterBinString[i]);
+                counterBinString[i] = String.format("%0" + numberOfBitsToFlipRoundedDown + "d", counterBinInt[i]);
+                for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {
+                    alternatesArray[i][j] = Character.getNumericValue(counterBinString[i].charAt(j));
+                }
+            }
+/*
+XXX
+ */
+            //feed those one by one back into the IP address to receive the variants (before ID and BA calc)
+            for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                      //for every network
+                int iPv6DezQuartet0 = 0;
+                int iPv6DezQuartet1 = 0;
+                int iPv6DezQuartet2 = 0;
+                int iPv6DezQuartet3 = 0;
+                int iPv6DezQuartet4 = 0;
+                int iPv6DezQuartet5 = 0;
+                int iPv6DezQuartet7 = 0;
+                int iPv6DezQuartet8 = 0;
+
+                for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {               //for every Bit
+                    IPv6BinBitwise[getSubnetSlash() + j] = alternatesArray[i][j];
+
+                    //ID
+                    //Seperate into Quartets
+                    int[] iPv6BinOctet0 = Arrays.copyOfRange(IPv6BinBitwise, 0, 16);
+                    int[] iPv6BinOctet1 = Arrays.copyOfRange(IPv6BinBitwise, 16, 32);
+                    int[] iPv6BinOctet2 = Arrays.copyOfRange(IPv6BinBitwise, 32, 48);
+                    int[] iPv6BinOctet3 = Arrays.copyOfRange(IPv6BinBitwise, 48, 64);
+                    int[] iPv6BinOctet4 = Arrays.copyOfRange(IPv6BinBitwise, 64, 80);
+                    int[] iPv6BinOctet5 = Arrays.copyOfRange(IPv6BinBitwise, 80, 96);
+                    int[] iPv6BinOctet6 = Arrays.copyOfRange(IPv6BinBitwise, 96, 112);
+                    int[] iPv6BinOctet7 = Arrays.copyOfRange(IPv6BinBitwise, 112, 128);
+
+
+                    //convert to decimal
+                    String iPv6BinStringOctet0 = "" + iPv4BinOctet0[0] + iPv4BinOctet0[1] + iPv4BinOctet0[2] + iPv4BinOctet0[3] + iPv4BinOctet0[4] + iPv4BinOctet0[5] + iPv4BinOctet0[6] + iPv4BinOctet0[7];
+                    String iPv6BinStringOctet1 = "" + iPv4BinOctet1[0] + iPv4BinOctet1[1] + iPv4BinOctet1[2] + iPv4BinOctet1[3] + iPv4BinOctet1[4] + iPv4BinOctet1[5] + iPv4BinOctet1[6] + iPv4BinOctet1[7];
+                    String iPv6BinStringOctet2 = "" + iPv4BinOctet2[0] + iPv4BinOctet2[1] + iPv4BinOctet2[2] + iPv4BinOctet2[3] + iPv4BinOctet2[4] + iPv4BinOctet2[5] + iPv4BinOctet2[6] + iPv4BinOctet2[7];
+                    String iPv6BinStringOctet3 = "" + iPv4BinOctet3[0] + iPv4BinOctet3[1] + iPv4BinOctet3[2] + iPv4BinOctet3[3] + iPv4BinOctet3[4] + iPv4BinOctet3[5] + iPv4BinOctet3[6] + iPv4BinOctet3[7];
+                    iPv4DezOctet0 = Integer.parseInt(iPv4BinStringOctet0, 2);
+                    iPv4DezOctet1 = Integer.parseInt(iPv4BinStringOctet1, 2);
+                    iPv4DezOctet2 = Integer.parseInt(iPv4BinStringOctet2, 2);
+                    iPv4DezOctet3 = Integer.parseInt(iPv4BinStringOctet3, 2);
+
+                    //BA
+                    //All host bits to one
+                    // int[] IPv4BinBitwiseBA = IPv4BinBitwise;
+                    for (int x = getSubnetSlash() +((int)numberOfBitsToFlip); x < 32; x++) {
+                        IPv4BinBitwise[x] = 1;
+                    }
+                    int[] iPv4BinOctet0BA = Arrays.copyOfRange(IPv4BinBitwise, 0, 8);
+                    int[] iPv4BinOctet1BA = Arrays.copyOfRange(IPv4BinBitwise, 8, 16);
+                    int[] iPv4BinOctet2BA = Arrays.copyOfRange(IPv4BinBitwise, 16, 24);
+                    int[] iPv4BinOctet3BA = Arrays.copyOfRange(IPv4BinBitwise, 24, 32);
+                    //convert to decimal
+                    String iPv4BinStringOctet0BA = "" + iPv4BinOctet0BA[0] + iPv4BinOctet0BA[1] + iPv4BinOctet0BA[2] + iPv4BinOctet0BA[3] + iPv4BinOctet0BA[4] + iPv4BinOctet0BA[5] + iPv4BinOctet0BA[6] + iPv4BinOctet0BA[7];
+                    String iPv4BinStringOctet1BA = "" + iPv4BinOctet1BA[0] + iPv4BinOctet1BA[1] + iPv4BinOctet1BA[2] + iPv4BinOctet1BA[3] + iPv4BinOctet1BA[4] + iPv4BinOctet1BA[5] + iPv4BinOctet1BA[6] + iPv4BinOctet1BA[7];
+                    String iPv4BinStringOctet2BA = "" + iPv4BinOctet2BA[0] + iPv4BinOctet2BA[1] + iPv4BinOctet2BA[2] + iPv4BinOctet2BA[3] + iPv4BinOctet2BA[4] + iPv4BinOctet2BA[5] + iPv4BinOctet2BA[6] + iPv4BinOctet2BA[7];
+                    String iPv4BinStringOctet3BA = "" + iPv4BinOctet3BA[0] + iPv4BinOctet3BA[1] + iPv4BinOctet3BA[2] + iPv4BinOctet3BA[3] + iPv4BinOctet3BA[4] + iPv4BinOctet3BA[5] + iPv4BinOctet3BA[6] + iPv4BinOctet3BA[7];
+                    iPv4DezOctet0BA = Integer.parseInt(iPv4BinStringOctet0BA, 2);
+                    iPv4DezOctet1BA = Integer.parseInt(iPv4BinStringOctet1BA, 2);
+                    iPv4DezOctet2BA = Integer.parseInt(iPv4BinStringOctet2BA, 2);
+                    iPv4DezOctet3BA = Integer.parseInt(iPv4BinStringOctet3BA, 2);
+                }
+
+                System.out.println("**===================**"
+                        + "\r\n" + "ID: " + iPv4DezOctet0 + "." + iPv4DezOctet1 + "." + iPv4DezOctet2 + "." + iPv4DezOctet3
+                        + "\r\n" + "BA: " + iPv4DezOctet0BA + "." + iPv4DezOctet1BA + "." + iPv4DezOctet2BA + "." + iPv4DezOctet3BA
+                        + "\r\n" + "**===================**");
+
+            }
+        }
+        //Uneven number of Networks goes here. We make more nets than we output
+        else {
+            int numberOfNetworksMade = (int)Math.pow(2,numberOfBitsToFlipRoundedUp);
+            int[] counterDec = new int[numberOfNetworksMade];
+            String[] counterBinString = new String[numberOfNetworksMade];
+            int[] counterBinInt = new int[numberOfNetworksMade * numberOfBitsToFlipRoundedUp];
+            int[][] alternatesArray2 = new int[numberOfNetworksMade][numberOfBitsToFlipRoundedUp];              //bits to flip rounded up
+
+            for (int i = 0; i < numberOfNetworksMade; i++) {
+                counterDec[i] = i;
+                counterBinString[i] = Integer.toBinaryString(counterDec[i]);
+                counterBinInt[i] = Integer.parseInt(counterBinString[i]);
+                counterBinString[i] = String.format("%0" + numberOfBitsToFlipRoundedUp +"d", counterBinInt[i]);
+
+                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {
+                    alternatesArray2[i][j] = Character.getNumericValue(counterBinString[i].charAt(j));
+                }
+            }
+
+            for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                                 //for every network
+                for (int j = 0; j < numberOfBitsToFlipRoundedUp; j++) {                             //for every Bit
+                    IPv4BinBitwise[getSubnetSlash() + j] = alternatesArray2[i][j];
+                }
+
+                //ID
+                //All host bits to zero
+                for (int x = getSubnetSlash() + numberOfBitsToFlipRoundedUp; x < 32; x++){
+                    IPv4BinBitwise[x] = 0;
+                }
+
+                //Seperate into Octets
+                int[] iPv4BinOctet0 = Arrays.copyOfRange(IPv4BinBitwise, 0, 8);
+                int[] iPv4BinOctet1 = Arrays.copyOfRange(IPv4BinBitwise, 8, 16);
+                int[] iPv4BinOctet2 = Arrays.copyOfRange(IPv4BinBitwise, 16, 24);
+                int[] iPv4BinOctet3 = Arrays.copyOfRange(IPv4BinBitwise, 24, 32);;
+
+                //convert to decimal
+                String iPv4BinStringOctet0 = "" +iPv4BinOctet0[0] +iPv4BinOctet0[1] +iPv4BinOctet0[2] +iPv4BinOctet0[3] +iPv4BinOctet0[4] +iPv4BinOctet0[5] +iPv4BinOctet0[6] +iPv4BinOctet0[7];
+                String iPv4BinStringOctet1 = "" +iPv4BinOctet1[0] +iPv4BinOctet1[1] +iPv4BinOctet1[2] +iPv4BinOctet1[3] +iPv4BinOctet1[4] +iPv4BinOctet1[5] +iPv4BinOctet1[6] +iPv4BinOctet1[7];
+                String iPv4BinStringOctet2 = "" +iPv4BinOctet2[0] +iPv4BinOctet2[1] +iPv4BinOctet2[2] +iPv4BinOctet2[3] +iPv4BinOctet2[4] +iPv4BinOctet2[5] +iPv4BinOctet2[6] +iPv4BinOctet2[7];
+                String iPv4BinStringOctet3 ="" +iPv4BinOctet3[0] +iPv4BinOctet3[1] +iPv4BinOctet3[2] +iPv4BinOctet3[3] +iPv4BinOctet3[4] +iPv4BinOctet3[5] +iPv4BinOctet3[6] +iPv4BinOctet3[7];
+
+                int iPv4DezOctet0 = Integer.parseInt(iPv4BinStringOctet0, 2);
+                int iPv4DezOctet1 = Integer.parseInt(iPv4BinStringOctet1, 2);
+                int iPv4DezOctet2 = Integer.parseInt(iPv4BinStringOctet2, 2);
+                int iPv4DezOctet3 = Integer.parseInt(iPv4BinStringOctet3, 2);
+
+                //BA
+                //All host bits to one
+                int[]IPv4BinBitwiseBA = IPv4BinBitwise;
+                for (int x = getSubnetSlash() + numberOfBitsToFlipRoundedUp; x < 32; x++) {
+                    IPv4BinBitwiseBA[x] = 1;
+                }
+                int[] iPv4BinOctet0BA = Arrays.copyOfRange(IPv4BinBitwiseBA, 0, 8);
+                int[] iPv4BinOctet1BA = Arrays.copyOfRange(IPv4BinBitwiseBA, 8, 16);
+                int[] iPv4BinOctet2BA = Arrays.copyOfRange(IPv4BinBitwiseBA, 16, 24);
+                int[] iPv4BinOctet3BA = Arrays.copyOfRange(IPv4BinBitwiseBA, 24, 32);;
+
+                //convert to decimal
+                String iPv4BinStringOctet0BA = "" +iPv4BinOctet0BA[0] +iPv4BinOctet0BA[1] +iPv4BinOctet0BA[2] +iPv4BinOctet0BA[3] +iPv4BinOctet0BA[4] +iPv4BinOctet0BA[5] +iPv4BinOctet0BA[6] +iPv4BinOctet0BA[7];
+                String iPv4BinStringOctet1BA = "" +iPv4BinOctet1BA[0] +iPv4BinOctet1BA[1] +iPv4BinOctet1BA[2] +iPv4BinOctet1BA[3] +iPv4BinOctet1BA[4] +iPv4BinOctet1BA[5] +iPv4BinOctet1BA[6] +iPv4BinOctet1BA[7];
+                String iPv4BinStringOctet2BA = "" +iPv4BinOctet2BA[0] +iPv4BinOctet2BA[1] +iPv4BinOctet2BA[2] +iPv4BinOctet2BA[3] +iPv4BinOctet2BA[4] +iPv4BinOctet2BA[5] +iPv4BinOctet2BA[6] +iPv4BinOctet2BA[7];
+                String iPv4BinStringOctet3BA ="" +iPv4BinOctet3BA[0] +iPv4BinOctet3BA[1] +iPv4BinOctet3BA[2] +iPv4BinOctet3BA[3] +iPv4BinOctet3BA[4] +iPv4BinOctet3BA[5] +iPv4BinOctet3BA[6] +iPv4BinOctet3BA[7];
+
+                int iPv4DezOctet0BA = Integer.parseInt(iPv4BinStringOctet0BA, 2);
+                int iPv4DezOctet1BA = Integer.parseInt(iPv4BinStringOctet1BA, 2);
+                int iPv4DezOctet2BA = Integer.parseInt(iPv4BinStringOctet2BA, 2);
+                int iPv4DezOctet3BA = Integer.parseInt(iPv4BinStringOctet3BA, 2);
+
+                int counter = 0;
+                counter ++;
+
+                if (counter < getNumberOfNetworksDesired()) {
+                    System.out.println("**===================**"
+                            + "\r\n" + "ID: " + iPv4DezOctet0 + "." + iPv4DezOctet1 + "." + iPv4DezOctet2 + "." + iPv4DezOctet3
+                            + "\r\n" + "BA: " + iPv4DezOctet0BA + "." + iPv4DezOctet1BA + "." + iPv4DezOctet2BA + "." + iPv4DezOctet3BA
+                            + "\r\n" + "**===================**");
+                }
+            }
+        }
+    }
+
 }
 
     public class IPv4Calculator {
@@ -685,6 +881,7 @@ class IPv6 {
                     input = true;
                     IPv6.encoding();
                     IPv6.numberOfNetworks();
+                    IPv6.sameSizeNetworks();
 //IPv4
                 } else if (eingabe.equals("4")) {
                     input = true;
