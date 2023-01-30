@@ -530,9 +530,11 @@ class IPv6 {
     static int[] IPv6BinInt = {0, 0, 0, 0, 0, 0, 0, 0};
     static boolean input = true;
     static boolean input2 = false;
+
     public static String getIPv6Hex(int index) {
         return IPv6Hex[index];
     }
+
     public static void setIPv6Hex(String IPv6Hex, int index) {
 
         //input too short
@@ -547,15 +549,19 @@ class IPv6 {
     private static int subnetSlash = 0;
     static double newSubnetSlash = 0;
     private static int numberOfNetworksDesired;
+
     public static int getSubnetSlash() {
         return subnetSlash;
     }
+
     public static void setSubnetSlash(int subnetSlash) {
         IPv6.subnetSlash = subnetSlash;
     }
+
     public static int getNumberOfNetworksDesired() {
         return numberOfNetworksDesired;
     }
+
     public static void setNumberOfNetworksDesired(int numberOfNetworksDesired) {
         IPv6.numberOfNetworksDesired = numberOfNetworksDesired;
     }
@@ -576,46 +582,46 @@ class IPv6 {
 
 //input IP
         //test input for length and correct chars
-            for(int i = 0; i<8; i++) {
+        for (int i = 0; i < 8; i++) {
+            do {
                 do {
-                    do {
-                        System.out.println("Please enter the " + (i + 1) + ". quartet:");
-                        eingabe = in.nextLine();
+                    System.out.println("Please enter the " + (i + 1) + ". quartet:");
+                    eingabe = in.nextLine();
 
-                        if(eingabe.isEmpty()){
-                            eingabe = "0000";
-                        }
-                        boolean[] eingabeBool = new boolean[eingabe.length()];
+                    if (eingabe.isEmpty()) {
+                        eingabe = "0000";
+                    }
+                    boolean[] eingabeBool = new boolean[eingabe.length()];
 
-                        //test the hex input
-                        //wrong letters
-                        for (int j = 0; j < eingabe.length(); j++) {
-                            for (int k = 0; k < 22; k++) {
-                                if (eingabe.charAt(j) == hexChar[k]) {
-                                    eingabeBool[j] = true;
-                                }
+                    //test the hex input
+                    //wrong letters
+                    for (int j = 0; j < eingabe.length(); j++) {
+                        for (int k = 0; k < 22; k++) {
+                            if (eingabe.charAt(j) == hexChar[k]) {
+                                eingabeBool[j] = true;
                             }
                         }
-                        for (int x = 0; x < eingabe.length(); x++) {
-                            if (!eingabeBool[x]) {
-                                System.out.println("That is not a valid hex number");
-                                input3 = false;
-                            }else{
-                                input3 = true;
-                            }
+                    }
+                    for (int x = 0; x < eingabe.length(); x++) {
+                        if (!eingabeBool[x]) {
+                            System.out.println("That is not a valid hex number");
+                            input3 = false;
+                        } else {
+                            input3 = true;
                         }
-                    }while (!input3);
+                    }
+                } while (!input3);
                 //too long
-                    if (eingabe.length() > 4) {
+                if (eingabe.length() > 4) {
                     System.out.println("That number is too long.");
                     input2 = false;
-                }else {
+                } else {
                     setIPv6Hex(eingabe, i);
                     input2 = true;
                     break;
-                   }
-                }while (!input2);
-            }
+                }
+            } while (!input2);
+        }
 
 //converts to binary
         for (int i = 0; i < 8; i++) {
@@ -632,54 +638,71 @@ class IPv6 {
         setNumberOfNetworksDesired(in3.nextInt());
         double numberOfBitsToFlip = log(getNumberOfNetworksDesired()) / log(2);
 
-        newSubnetSlash = (int)(getSubnetSlash() + numberOfBitsToFlip);
-        if(!(numberOfBitsToFlip % 2 == 0)){
-            numberOfBitsToFlip = (int)(numberOfBitsToFlip +1);
+        newSubnetSlash = (int) (getSubnetSlash() + numberOfBitsToFlip);
+        if (!(numberOfBitsToFlip % 2 == 0)) {
+            numberOfBitsToFlip = (int) (numberOfBitsToFlip + 1);
         }
 
         int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make vs.
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
     }
 
-/*
+    public static void numberOfNetworks() {                                //collects desired subnets and returns new subnetmask, ID and BA and number of hosts
+        String eingabe;
+        while (true) {
+            System.out.println("How many networks do you want to make?");
+            Scanner in3 = new Scanner(System.in);
+            setNumberOfNetworksDesired(in3.nextInt());
+            if (input2) {
+                break;
+            }
+        }
+        System.out.println();
+
+
+
         System.out.println("Debug:------------------------"
                 +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
                 +"\r\n"  +"Binary String: " + Arrays.toString(IPv6BinString)
                 +"\r\n"  +"Subnetmask: "    + newSubnetSlash
+                +"\r\n"  +"Number of Nets: "+ getNumberOfNetworksDesired()
                 +"\r\n"  +"-------------------------------");
-*/
 
+
+    }
 }
+
     public class IPv4Calculator {
         public static void main(String[] args) {
             boolean input = false;
 
-           while(!input) {
-               System.out.println("IPv4 oder IPv6? (4/6)");
-               Scanner in = new Scanner(System.in);
-               String eingabe = in.nextLine();
+            while (!input) {
+                System.out.println("IPv4 oder IPv6? (4/6)");
+                Scanner in = new Scanner(System.in);
+                String eingabe = in.nextLine();
 //IPv6
-               if (eingabe.equals("6")) {
-                   input = true;
-                   IPv6.encoding();
+                if (eingabe.equals("6")) {
+                    input = true;
+                    IPv6.encoding();
+                    IPv6.numberOfNetworks();
 //IPv4
-               } else if (eingabe.equals("4")) {
-                   input = true;
-                   IPv4.encoding();
-                   IPv4.numberAndSizeOfNetworks();
+                } else if (eingabe.equals("4")) {
+                    input = true;
+                    IPv4.encoding();
+                    IPv4.numberAndSizeOfNetworks();
 //gleichgroße Netze:
-                   if (IPv4.isSameSize) {
-                       IPv4.sameSizeNetworks();
-                   }
+                    if (IPv4.isSameSize) {
+                        IPv4.sameSizeNetworks();
+                    }
 //ungleiche Netze:
-                   if (!IPv4.isSameSize) {
-                       IPv4.differentSizeNetworks();
-                   }
-               }else{
-                   input = false;
-               }
-           }
+                    if (!IPv4.isSameSize) {
+                        IPv4.differentSizeNetworks();
+                    }
+                } else {
+                    input = false;
+                }
+            }
         }
     }
-    
+
 
