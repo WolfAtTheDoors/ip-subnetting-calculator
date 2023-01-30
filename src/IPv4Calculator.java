@@ -4,13 +4,11 @@
 * date: 23.01.2023
 * Issues still to fix:
 * IPv4
-* - Userproofing inputs
-* - number of networks by subnetmask(!)
+* - Userproofing inputs (number of networks)
 * - problem: Same size nets in different size network option
 * IPv6
-* - shortform input, padding rules
+* - calculation
 * - output
-* - Userproofing
  */
 
 package src;
@@ -641,16 +639,17 @@ class IPv6 {
 
         int numberOfBitsToFlipRoundedUp = (int) numberOfBitsToFlip + 1;           //the number of subnets we make vs.
         int numberOfBitsToFlipRoundedDown = (int) numberOfBitsToFlip;            //the number of subnets we give out
-
-        System.out.println("Debug:------------------------"
-                            +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
-                            +"\r\n"  +"Binary String: " + Arrays.toString(IPv6BinString)
-                            +"\r\n"  +"Subnetmask: "    + newSubnetSlash
-                            +"\r\n"  +"----------------------------");
-
     }
-}
 
+/*
+        System.out.println("Debug:------------------------"
+                +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
+                +"\r\n"  +"Binary String: " + Arrays.toString(IPv6BinString)
+                +"\r\n"  +"Subnetmask: "    + newSubnetSlash
+                +"\r\n"  +"-------------------------------");
+*/
+
+}
     public class IPv4Calculator {
         public static void main(String[] args) {
             boolean input = false;
