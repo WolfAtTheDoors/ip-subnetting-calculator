@@ -720,14 +720,6 @@ class IPv6 {
 
             //feed those one by one back into the IP address to receive the variants
             for (int i = 0; i < getNumberOfNetworksDesired(); i++) {                      //for every network
-                String iPv6HexQuartet0 = "";
-                String iPv6HexQuartet1 = "";
-                String iPv6HexQuartet2 = "";
-                String iPv6HexQuartet3 = "";
-                String iPv6HexQuartet4 = "";
-                String iPv6HexQuartet5 = "";
-                String iPv6HexQuartet6 = "";
-                String iPv6HexQuartet7 = "";
 
                 //feed those one by one back into the IP address to receive the variants (one IPv6BinBitwise per network)
                 for (int j = 0; j < numberOfBitsToFlipRoundedDown; j++) {               //for every Bit
@@ -801,41 +793,49 @@ class IPv6 {
                 }
 
                 //ID
-                //All host bits to zero
-                for (int x = getSubnetSlash() + numberOfBitsToFlipRoundedUp; x < 32; x++){
-                    IPv6BinBitwise[x] = 0;
+                //Seperate into binary octet(16) arrays
+                int[][] iPv6BinOctetArrays = new int[8][16];
+                String[] iPv6BinOctetStrings = new String[8];
+                String[] iPv6HexOctets = new String[8];
+
+                for (int k = 0; k < 8; k++) {
+                    iPv6BinOctetArrays[k] = Arrays.copyOfRange(IPv6BinBitwise, (k * 16), (k * 16 + 16));
+
+                    /*
+                    octet arrays:
+                     l >
+                   k 0000 0000 0000 0000
+                   v 0000 0000 0000 0000
+                     0000 0000 0000 0000
+                     0000 0000 0000 0000 l
+                                       k
+                    */
+
+                    //convert to binary quartet(16) strings k
+                    iPv6BinOctetStrings[k] = "" + iPv6BinOctetArrays[k][0] + iPv6BinOctetArrays[k][1] + iPv6BinOctetArrays[k][2] +
+                            iPv6BinOctetArrays[k][3] + iPv6BinOctetArrays[k][4] + iPv6BinOctetArrays[k][5] +
+                            iPv6BinOctetArrays[k][6] + iPv6BinOctetArrays[k][7] + iPv6BinOctetArrays[k][8] +
+                            iPv6BinOctetArrays[k][9] + iPv6BinOctetArrays[k][10] + iPv6BinOctetArrays[k][11] +
+                            iPv6BinOctetArrays[k][12] + iPv6BinOctetArrays[k][13] + iPv6BinOctetArrays[k][14] +
+                            iPv6BinOctetArrays[k][15];
+
+                    int[] decimalOctets = new int[8];
+                    decimalOctets[k] = Integer.parseInt(iPv6BinOctetStrings[k], 2);
+                    iPv6HexOctets[k] = Integer.toString(decimalOctets[k], 16);
+
                 }
 
-                //Seperate into Octets
-                int[] iPv4BinOctet0 = Arrays.copyOfRange(IPv6BinBitwise, 0, 8);
-                int[] iPv4BinOctet1 = Arrays.copyOfRange(IPv6BinBitwise, 8, 16);
-                int[] iPv4BinOctet2 = Arrays.copyOfRange(IPv6BinBitwise, 16, 24);
-                int[] iPv4BinOctet3 = Arrays.copyOfRange(IPv6BinBitwise, 24, 32);;
 
-                //convert to decimal
-                String iPv4BinStringOctet0 = "" +iPv4BinOctet0[0] +iPv4BinOctet0[1] +iPv4BinOctet0[2] +iPv4BinOctet0[3] +iPv4BinOctet0[4] +iPv4BinOctet0[5] +iPv4BinOctet0[6] +iPv4BinOctet0[7];
-                String iPv4BinStringOctet1 = "" +iPv4BinOctet1[0] +iPv4BinOctet1[1] +iPv4BinOctet1[2] +iPv4BinOctet1[3] +iPv4BinOctet1[4] +iPv4BinOctet1[5] +iPv4BinOctet1[6] +iPv4BinOctet1[7];
-                String iPv4BinStringOctet2 = "" +iPv4BinOctet2[0] +iPv4BinOctet2[1] +iPv4BinOctet2[2] +iPv4BinOctet2[3] +iPv4BinOctet2[4] +iPv4BinOctet2[5] +iPv4BinOctet2[6] +iPv4BinOctet2[7];
-                String iPv4BinStringOctet3 ="" +iPv4BinOctet3[0] +iPv4BinOctet3[1] +iPv4BinOctet3[2] +iPv4BinOctet3[3] +iPv4BinOctet3[4] +iPv4BinOctet3[5] +iPv4BinOctet3[6] +iPv4BinOctet3[7];
-
-                int iPv4DezOctet0 = Integer.parseInt(iPv4BinStringOctet0, 2);
-                int iPv4DezOctet1 = Integer.parseInt(iPv4BinStringOctet1, 2);
-                int iPv4DezOctet2 = Integer.parseInt(iPv4BinStringOctet2, 2);
-                int iPv4DezOctet3 = Integer.parseInt(iPv4BinStringOctet3, 2);
-
-                int counter = 0;
-                counter ++;
-
-                if (counter < getNumberOfNetworksDesired()) {
-                    System.out.println("**===================**"
-                            + "\r\n" + "ID: " + iPv4DezOctet0 + "." + iPv4DezOctet1 + "." + iPv4DezOctet2 + "." + iPv4DezOctet3
-                            + "\r\n" + "**===================**");
-                }
+                System.out.println("**===================**"
+                        + "\r\n" + "ID: " + iPv6HexOctets[0] + ":" + iPv6HexOctets[1] + ":"+ iPv6HexOctets[2] + ":"+ iPv6HexOctets[3] + ":"
+                        + iPv6HexOctets[4] + ":" + iPv6HexOctets[5] + ":"+ iPv6HexOctets[6] + ":"+ iPv6HexOctets[7]
+                        + "\r\n" + "**===================**");
             }
+        }
+
         }
     }
 
-}
 
     public class IPv4Calculator {
         public static void main(String[] args) {
