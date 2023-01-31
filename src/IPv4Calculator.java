@@ -655,7 +655,7 @@ class IPv6 {
             }
         }
 
-
+/*
 
         System.out.println("Debug:------------------------"
                 +"\r\n"  +"Hex String: "    + Arrays.toString(IPv6Hex)
@@ -664,7 +664,7 @@ class IPv6 {
                 +"\r\n"  +"Number of Nets: "+ getNumberOfNetworksDesired()
                 +"\r\n"  +"-------------------------------");
 
-
+*/
     }
 
     public static void sameSizeNetworks() {
