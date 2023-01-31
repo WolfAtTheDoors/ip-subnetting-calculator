@@ -763,10 +763,9 @@ class IPv6 {
                 System.out.println("**===================**"
                         + "\r\n" + "ID: " + iPv6HexOctets[0] + ":" + iPv6HexOctets[1] + ":"+ iPv6HexOctets[2] + ":"+ iPv6HexOctets[3] + ":"
                                           + iPv6HexOctets[4] + ":" + iPv6HexOctets[5] + ":"+ iPv6HexOctets[6] + ":"+ iPv6HexOctets[7]
-                        + "\r\n" + "**===================**");
+                        );
             }
         }
-
 
         //Uneven number of Networks goes here. We make more nets than we output
         else {
@@ -829,13 +828,11 @@ class IPv6 {
                 System.out.println("**===================**"
                         + "\r\n" + "ID: " + iPv6HexOctets[0] + ":" + iPv6HexOctets[1] + ":"+ iPv6HexOctets[2] + ":"+ iPv6HexOctets[3] + ":"
                         + iPv6HexOctets[4] + ":" + iPv6HexOctets[5] + ":"+ iPv6HexOctets[6] + ":"+ iPv6HexOctets[7]
-                        + "\r\n" + "**===================**");
+                );
             }
         }
-
         }
     }
-
 
     public class IPv4Calculator {
         public static void main(String[] args) {
@@ -856,11 +853,11 @@ class IPv6 {
                     input = true;
                     IPv4.encoding();
                     IPv4.numberAndSizeOfNetworks();
-//gleichgroße Netze:
+        //gleichgroße Netze:
                     if (IPv4.isSameSize) {
                         IPv4.sameSizeNetworks();
                     }
-//ungleiche Netze:
+        //ungleiche Netze:
                     if (!IPv4.isSameSize) {
                         IPv4.differentSizeNetworks();
                     }
