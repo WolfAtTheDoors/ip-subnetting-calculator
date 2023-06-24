@@ -71,7 +71,7 @@ class IPv4 {
         return IPv4Dec[index];
     }
     public static void setIPv4Dec(int IPv4Dec, int index) {
-        if (IPv4Dec > 0 && IPv4Dec < 256) {
+        if (IPv4Dec >= 0 && IPv4Dec < 256) {
             IPv4.IPv4Dec[index] = IPv4Dec;
             input = true;
         } else {
